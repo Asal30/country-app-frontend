@@ -2,24 +2,8 @@ import { useEffect, useState } from 'react';
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { FaUsers, FaKey, FaGlobe } from "react-icons/fa";
 import axios from 'axios';
-import UsersPage from '../pages/usersPage';
-import ApiKeysPage from '../pages/apiKeysPage';
-import CountriesPage from '../pages/countriesPage';
 
-export default function AdminPage({ token }) {
-  return (
-    <div>
-        <Routes>
-            <Route path="/*" element={<AdminDashboard token={token} />} />
-            <Route path="/users" element={<UsersPage token={token} />} />
-            <Route path="/api-keys" element={<ApiKeysPage token={token} />} />
-            <Route path="/countries" element={<CountriesPage token={token} />} />
-        </Routes>
-    </div>
-  );
-}
-
-export function AdminDashboard({ token }) {
+export default function AdminDashboard({ token }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({
@@ -60,21 +44,21 @@ export function AdminDashboard({ token }) {
     {
       title: "Users",
       count: loading ? '...' : counts.users,
-      path: "/users",
+      path: "/admin/users",
       icon: <FaUsers className="text-[#2C6975] text-4xl" />,
       description: "Manage user accounts and permissions",
     },
     {
       title: "API Keys",
       count: loading ? '...' : counts.apiKeys,
-      path: "/api-keys",
+      path: "/admin/api-keys",
       icon: <FaKey className="text-[#2C6975] text-4xl" />,
       description: "Generate and manage API access keys",
     },
     {
       title: "Countries",
       count: loading ? '...' : counts.countries,
-      path: "/countries",
+      path: "/admin/countries",
       icon: <FaGlobe className="text-[#2C6975] text-4xl" />,
       description: "View and manage geographical data",
     },
