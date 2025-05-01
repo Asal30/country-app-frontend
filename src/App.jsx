@@ -14,18 +14,7 @@ function App() {
   useEffect(() => {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('role', role);
-
-    window.onbeforeunload = () => {
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('role');
-    };
-
-    return () => {
-      window.onbeforeunload = null;
-    };
   }, [token, role]);
-
-  
 
   const logout = () => {
     setToken('');
@@ -33,13 +22,14 @@ function App() {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('role');
   };
+
   return (
     <BrowserRouter>
-      <Header token={token} logout={logout} role={role}/>
+      <Header token={token} logout={logout} role={role} />
       <Routes>
         <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
         <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
-        <Route path="/dashboard" element={token && role === 'user' ? <UserDashboard token={token} /> : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={token && role === 'user' || role === 'admin' ? <UserDashboard token={token} /> : <Navigate to="/login" />} />
         <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
         <Route path="/*" element={<Navigate to={token ? (role === 'admin' ? '/admin' : '/dashboard') : '/login'} />} />
       </Routes>
