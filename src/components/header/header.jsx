@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import  LinkItem from "../../routes";
 
 function Header({ token, logout, role }) {
   const navigate = useNavigate();
@@ -8,30 +9,34 @@ function Header({ token, logout, role }) {
   };
 
   return (
-    <nav className="bg-primary-800 text-white shadow-lg fixed top-0 left-0 right-0 z-10">
+    <nav className="backdrop-filter backdrop-blur-lg bg-opacity-30 bg-gray-900 text-white shadow-lg fixed top-0 left-0 right-0 z-10">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold">
-          CountryAPI Application
+        <Link to="/" className="text-2xl font-bold hover:text-primary-600 transition duration-300 ease-in-out">
+          Travel Blogger
         </Link>
 
         <div className="flex space-x-4">
           {/* Common navigation links */}
-          <Link to="/" className="px-3 py-2 rounded hover:bg-primary-700 transition">Home</Link>
-          <Link to="/search" className="px-3 py-2 rounded hover:bg-primary-700 transition">Search</Link>
-
-          {token ? (
+          <LinkItem to="/" label="Home" />
+          {token && (
             <>
               {role === "admin" && (
-                <Link to="/admin" className="px-3 py-2 rounded hover:bg-primary-700 transition">Admin</Link>
+                <LinkItem to="/admin" label="Admin" />
               )}
-              {role === "user" || role === "admin" && (
-                <Link to="/dashboard" className="px-3 py-2 rounded hover:bg-primary-700 transition">Dashboard</Link>
-              )}
-              <Link to="/profile" className="px-3 py-2 rounded hover:bg-primary-700 transition">Profile</Link>
-              <button onClick={changeRoot} className="px-3 py-2 rounded hover:bg-primary-700 transition">Logout</button>
             </>
+          )}
+          <LinkItem to="/userBlogs" label="My Blogs" />
+          <LinkItem to="/comments" label="Comments" />
+        </div>
+
+        <div className="flex space-x justify-end">
+          <LinkItem to="/profile" label="Profile" />
+          {token ? (
+            <button onClick={changeRoot} className="px-3 py-2 rounded hover:text-primary-600 transition duration-300 ease-in-out">
+              Logout
+            </button>
           ) : (
-            <Link to="/login" className="px-3 py-2 rounded hover:bg-primary-700 transition">Login/Register</Link>
+            <LinkItem to="/register" label="Login" />
           )}
         </div>
       </div>
@@ -40,3 +45,5 @@ function Header({ token, logout, role }) {
 }
 
 export default Header;
+
+
