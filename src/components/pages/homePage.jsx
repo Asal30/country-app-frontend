@@ -128,7 +128,7 @@ export default function HomePage() {
                 key={post.id}
                 className="backdrop-blur bg-black bg-opacity-20 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300"
               >
-                <img src={post.image} alt={post.title} className="w-full h-48 object-cover" />
+                <img src={post.image} alt={post.title} className="w-full h-48 object-cover rounded-lg mb-2" />
                 <div>
                   <h2 className="text-xl font-bold text-primary-800">{post.title}</h2>
                   <p className="text-primary-600 text-sm mt-2 h-10">{post.description}</p>
