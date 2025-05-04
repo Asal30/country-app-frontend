@@ -42,7 +42,7 @@ export default function Register() {
         }
       ).then((response) => {
         console.log(response.data.message);
-      })
+      });
 
       navigate("/login");
     } catch (err) {
@@ -52,8 +52,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-primary-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md backdrop-blur bg-white bg-opacity-40 rounded-lg shadow-md p-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-100 via-primary-200 to-primary-300 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white bg-opacity-90 rounded-lg shadow-lg p-8">
         <h2 className="text-3xl font-bold text-center text-primary-800 mb-8">
           Create Account
         </h2>
@@ -69,7 +69,7 @@ export default function Register() {
             <label className="block text-sm font-medium text-primary-700 mb-1">Username</label>
             <input
               type="text"
-              className="w-full p-3 border border-primary-300 rounded-lg"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="your_username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -80,7 +80,7 @@ export default function Register() {
             <label className="block text-sm font-medium text-primary-700 mb-1">Email</label>
             <input
               type="email"
-              className="w-full p-3 border border-primary-300 rounded-lg"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -91,7 +91,7 @@ export default function Register() {
             <label className="block text-sm font-medium text-primary-700 mb-1">Password</label>
             <input
               type="password"
-              className="w-full p-3 border border-primary-300 rounded-lg"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -102,7 +102,7 @@ export default function Register() {
             <label className="block text-sm font-medium text-primary-700 mb-1">Confirm Password</label>
             <input
               type="password"
-              className="w-full p-3 border border-primary-300 rounded-lg"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -116,7 +116,7 @@ export default function Register() {
                 type="checkbox"
                 checked={isAdmin}
                 onChange={handleAdminCheckboxChange}
-                className="form-checkbox h-5 w-5 text-primary-600"
+                className="form-checkbox h-5 w-5 text-primary-600 focus:ring-2 focus:ring-primary-500"
               />
               <span className="ml-2">Admin</span>
             </label>
@@ -124,7 +124,7 @@ export default function Register() {
 
           <button
             type="submit"
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition focus:ring-2 focus:ring-primary-500 focus:outline-none"
           >
             Register
           </button>
@@ -133,7 +133,7 @@ export default function Register() {
         <div className="mt-6 text-center">
           <Link
             to="/login"
-            className="text-primary-600 hover:text-primary-800 font-medium"
+            className="text-primary-600 hover:text-primary-800 font-medium transition"
           >
             Already have an account? Login
           </Link>

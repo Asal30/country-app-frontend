@@ -7,6 +7,8 @@ export default function LoginPage({ setToken, setRole }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -17,23 +19,25 @@ export default function LoginPage({ setToken, setRole }) {
     }
 
     try {
-      axios.post(import.meta.env.VITE_BACKEND_URL + "/api/auth/login", {
-        username : username,
-        password : password
-      }).then((response) => {
-        console.log(response.data.message);
-        setToken(response.data.token);
-        setRole(response.data.user_type || 'user');
-      })
-
+      axios
+        .post(import.meta.env.VITE_BACKEND_URL + "/api/auth/login", {
+          username: username,
+          password: password,
+        })
+        .then((response) => {
+          console.log(response.data.message);
+          setToken(response.data.token);
+          setRole(response.data.user_type || "user");
+          navigate(response.data.user_type === "admin" ? "/admin" : "/dashboard");
+        });
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      setError("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className="min-h-screen bg-primary-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md backdrop-blur bg-white bg-opacity-40 rounded-lg shadow-md p-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-100 via-primary-200 to-primary-300 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-md rounded-lg shadow-lg p-8">
         <h2 className="text-3xl font-bold text-center text-primary-800 mb-8">
           Welcome Back
         </h2>
@@ -51,7 +55,7 @@ export default function LoginPage({ setToken, setRole }) {
             </label>
             <input
               type="text"
-              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="your_username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -64,7 +68,7 @@ export default function LoginPage({ setToken, setRole }) {
             </label>
             <input
               type="password"
-              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -73,7 +77,7 @@ export default function LoginPage({ setToken, setRole }) {
 
           <button
             type="submit"
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition focus:ring-2 focus:ring-primary-500 focus:outline-none"
           >
             Login
           </button>
@@ -82,7 +86,7 @@ export default function LoginPage({ setToken, setRole }) {
         <div className="mt-6 text-center">
           <Link
             to="/register"
-            className="text-primary-600 hover:text-primary-800 font-medium"
+            className="text-primary-600 hover:text-primary-800 font-medium transition"
           >
             Don't have an account? Register
           </Link>
