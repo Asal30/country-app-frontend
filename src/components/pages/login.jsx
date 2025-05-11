@@ -32,8 +32,8 @@ export default function LoginPage({ setToken, setRole }) {
   };
 
   return (
-    <div className="min-h-screen bg-primary-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md backdrop-blur bg-white bg-opacity-40 rounded-lg shadow-md p-8">
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md backdrop-blur bg-white bg-opacity-10 rounded-lg shadow-md p-8">
         <h2 className="text-3xl font-bold text-center text-primary-800 mb-8">
           Welcome Back
         </h2>
@@ -51,7 +51,7 @@ export default function LoginPage({ setToken, setRole }) {
             </label>
             <input
               type="text"
-              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="your_username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -64,7 +64,7 @@ export default function LoginPage({ setToken, setRole }) {
             </label>
             <input
               type="password"
-              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
