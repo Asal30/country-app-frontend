@@ -4,7 +4,7 @@ import UserDashboard from './components/dashboard/userDashboard';
 import AdminDashboard from './components/dashboard/adminDashboard';
 import LoginPage from "./components/pages/login";
 import RegisterPage from "./components/pages/register";
-import Header from "./components/header/header";
+import Header from "./components/common/header/header";
 import { Navigate } from "react-router-dom";
 
 function App() {
