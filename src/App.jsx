@@ -4,7 +4,7 @@ import UserDashboard from './components/dashboard/userDashboard';
 import AdminDashboard from './components/dashboard/adminDashboard';
 import LoginPage from "./components/pages/login";
 import RegisterPage from "./components/pages/register";
-import Header from "./components/header/header";
+import Header from "./components/common/header/header";
 import { Navigate } from "react-router-dom";
 
 function App() {
@@ -25,14 +25,18 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header token={token} logout={logout} role={role} />
-      <Routes>
-        <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
-        <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
-        <Route path="/dashboard" element={token && role === 'user' || role === 'admin' ? <UserDashboard token={token} /> : <Navigate to="/login" />} />
-        <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
-        <Route path="/*" element={<Navigate to={token ? (role === 'admin' ? '/admin' : '/dashboard') : '/login'} />} />
-      </Routes>
+      <div className='bg-fixed bg-cover' style={{ backgroundImage: `url('/src/assets/background3.jpg')` }}>
+        <Header token={token} logout={logout} role={role} />
+        {/* Add margin-top to push content below the fixed header */}
+        <div className="pt-16">
+          <Routes>
+            <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
+            <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
+            <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
+            <Route path="/*" element={<UserDashboard token={token} />} />
+          </Routes>
+        </div>
+      </div>
     </BrowserRouter>
   );
 }

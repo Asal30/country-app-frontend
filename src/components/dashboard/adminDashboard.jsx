@@ -67,8 +67,8 @@ export default function AdminDashboard({ token }) {
   return (
     <div className="min-h-screen p-6 md:p-16 flex flex-col bg-[#E0ECDE]">
       {/* Header with Illustration */}
-      <div className="flex flex-col md:flex-row justify-between items-center">
-        <div className="text-center md:text-left">
+      <div className="flex flex-col md:flex-row justify-evenly items-center">
+        <div>
           <h1 className="text-3xl font-bold text-[#2C6975] mb-2">Admin Dashboard</h1>
           <p className="text-lg text-[#6B82A0]">Manage your application's core systems</p>
         </div>
