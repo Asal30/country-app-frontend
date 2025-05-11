@@ -11,17 +11,21 @@ import BlogsPage from './components/pages/blogsPage';
 function App() {
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
   const [role, setRole] = useState(sessionStorage.getItem('role') || '');
+  const [userId, setUserId] = useState(sessionStorage.getItem('userId') || '');
 
   useEffect(() => {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('role', role);
-  }, [token, role]);
+    sessionStorage.setItem('userId', userId);
+  }, [token, role, userId]);
 
   const logout = () => {
     setToken('');
     setRole('');
+    setUserId('');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('role');
+    sessionStorage.removeItem('userId');
   };
 
   return (
@@ -34,7 +38,7 @@ function App() {
             <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
-            <Route path="/userBlogs" element={<BlogsPage />} />
+            <Route path="/userBlogs" element={<BlogsPage token={token} userId={userId} />} />
             <Route path="/*" element={<UserDashboard token={token} />} />
           </Routes>
         </div>
