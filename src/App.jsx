@@ -35,7 +35,7 @@ function App() {
         {/* Add margin-top to push content below the fixed header */}
         <div className="pt-16">
           <Routes>
-            <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
+            <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} setUserId={setUserId} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
             <Route path="/userBlogs" element={<BlogsPage token={token} userId={userId} />} />
