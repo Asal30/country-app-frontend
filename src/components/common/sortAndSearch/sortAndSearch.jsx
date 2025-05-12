@@ -31,7 +31,7 @@ export default function SortAndSearch({ posts, setFilteredPosts }) {
   };
 
   return (
-    <div className="w-full flex justify-between px-[6%] items-center mt-6 mb-14">
+    <div className="w-full flex justify-between px-[6%] items-center mt-6 mb-12">
       {/* Filters */}
       <div className="flex space-x-4">
         <button

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import axios from "axios";
@@ -80,7 +80,10 @@ function BlogsPage({ token, userId }) {
       });
 
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post.id === id ? data : post)) // Replace the updated post in the list
+        prevPosts.map((post) => (post.id === id ? data : post))
+      );
+      setFilteredPosts((prevPosts) =>
+        prevPosts.map((post) => (post.id === id ? data : post))
       );
 
       setError("");
@@ -133,27 +136,26 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleCreate = async (data) => {
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("country", data.country);
-    formData.append("date", data.date);
-
-    if (data.photos) {
-      data.photos.forEach((photo) => formData.append("photos", photo));
-    }
-
     try {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("country", data.country);
+      formData.append("date", data.date);
+      data.photos.forEach((photo) => formData.append("photos", photo));
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
+      setPosts((prevPosts) => [...prevPosts, response.data]);
+      setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
       console.log("Blog created:", response.data);
     } catch (err) {
       console.error("Error creating blog:", err);
@@ -161,7 +163,6 @@ function BlogsPage({ token, userId }) {
     }
   };
 
-  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -180,6 +181,7 @@ function BlogsPage({ token, userId }) {
       if (isEditing) {
         await handleUpdate(formData.id, formData);
       } else {
+        console.log("Creating new blog with data:", formData);
         await handleCreate(formData);
       }
 
