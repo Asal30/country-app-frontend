@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import axios from "axios";
+import LikeButton from "../common/likeButton/likeButton";
 
 function BlogsPage({ token, userId }) {
   const [posts, setPosts] = useState([]);
@@ -136,30 +137,21 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleCreate = async (data) => {
+    debugger;
     try {
-      const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-      formData.append("country", data.country);
-      formData.append("date", data.date);
-      data.photos.forEach((photo) => formData.append("photos", photo));
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/blogs`, data, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       setPosts((prevPosts) => [...prevPosts, response.data]);
       setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
-      console.log("Blog created:", response.data);
+      setError("");
+      setHasFetched(false);
     } catch (err) {
-      console.error("Error creating blog:", err);
       setError("Failed to create the blog. Please try again.");
+      console.error("Error creating blog:", err);
     }
   };
 
@@ -238,7 +230,11 @@ function BlogsPage({ token, userId }) {
               key={post.id}
               className="backdrop-blur bg-black bg-opacity-20 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300"
             >
-              <img src={post.image} alt={post.title} className="w-full h-48 object-cover rounded-lg mb-2"/>
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-48 object-cover rounded-lg mb-2"
+              />
               <div>
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-bold text-primary-800">{post.title}</h2>
@@ -246,9 +242,16 @@ function BlogsPage({ token, userId }) {
                 </div>
                 <p className="text-primary-600 text-sm mt-2 h-10">{post.description}</p>
                 <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
-                  <span>Likes: {post.likes}</span>
-                  <span>Comments: {post.comments}</span>
                   <span>{new Date(post.date).toLocaleDateString()}</span>
+                </div>
+
+                {/* Like Button */}
+                <div className="mt-4">
+                  <LikeButton
+                    blogId={post.id}
+                    userId={userId}
+                    initialLikes={post.likes}
+                  />
                 </div>
 
                 <div className="flex justify-between mt-4">

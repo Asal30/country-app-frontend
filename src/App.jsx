@@ -39,7 +39,7 @@ function App() {
             <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
             <Route path="/userBlogs" element={<BlogsPage token={token} userId={userId} />} />
-            <Route path="/*" element={<UserDashboard token={token} />} />
+            <Route path="/*" element={<UserDashboard token={token} userId={userId} />} />
           </Routes>
         </div>
       </div>

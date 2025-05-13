@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
+import LikeButton from "../common/likeButton/likeButton";
+import { use } from "react";
 
-export default function HomePage() {
+export default function HomePage({token, userId}) {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -10,6 +12,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchAllBlogs = async () => {
+      console.log(userId);
       setLoading(true);
       try {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/blogs`);
@@ -68,6 +71,13 @@ export default function HomePage() {
                 <h2 className="text-xl font-bold text-primary-800">{post.title}</h2>
                 <p className="text-primary-600 text-sm mt-2 h-10">{post.description}</p>
                 <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
+                  {token &&(
+                    <LikeButton
+                      blogId={post.id}
+                      userId={userId}
+                      initialLikes={post.likes}
+                    />
+                  )}
                   <span>Likes: {post.likes}</span>
                   <span>Comments: {post.comments}</span>
                   <span>{new Date(post.date).toLocaleDateString()}</span>
