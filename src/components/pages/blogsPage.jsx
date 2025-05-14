@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import axios from "axios";
 import LikeButton from "../common/likeButton/likeButton";
+import { GoComment } from "react-icons/go";
 
 function BlogsPage({ token, userId }) {
   const [posts, setPosts] = useState([]);
@@ -242,16 +243,21 @@ function BlogsPage({ token, userId }) {
                 </div>
                 <p className="text-primary-600 text-sm mt-2 h-10">{post.description}</p>
                 <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
-                  <span>{new Date(post.date).toLocaleDateString()}</span>
+                  <span>{new Date(post.date).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}</span>
                 </div>
 
-                {/* Like Button */}
-                <div className="mt-4">
-                  <LikeButton
-                    blogId={post.id}
-                    userId={userId}
-                    initialLikes={post.likes}
-                  />
+                <div className="flex justify-between items-center mt-4">
+
+                  {/* Like Button */}
+                    <LikeButton blogId={post.id} userId={userId} initialLikes={post.likes} />
+                  <div className="flex items-center gap-4">
+                    <GoComment className="text-primary-600 text-xl font-bold" />
+                    {post.comments}
+                  </div>
                 </div>
 
                 <div className="flex justify-between mt-4">

@@ -1,66 +1,74 @@
-import React, { useState, useEffect } from "react";
-import { io } from "socket.io-client";
-const socket = io(import.meta.env.VITE_BACKEND_URL);
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 function LikeButton({ blogId, userId, initialLikes }) {
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // Prevent duplicate requests
 
   useEffect(() => {
-    // Fetch the user's like status when the component mounts
     const fetchUserLikeStatus = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/likes/status?blogId=${blogId}&userId=${userId}`
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/likes/status`,
+          {
+            params: { blogId, userId },
+          }
         );
-        const data = await response.json();
-        setLiked(data.liked);
+        setLiked(response.data.liked);
       } catch (error) {
         console.error("Failed to fetch like status:", error);
       }
     };
+    const getLikesCount = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/likes/count`,
+          {
+            params: { blogId },
+          }
+        );
+        setLikes(response.data.likesCount);
+      } catch (error) {
+        console.error("Failed to fetch like count:", error);
+      }
+    };
+    getLikesCount();
 
     fetchUserLikeStatus();
-
-    socket.on(`likeUpdate-${blogId}`, (updatedLikes) => {
-      setLikes(updatedLikes);
-    });
-
-    return () => {
-      socket.off(`likeUpdate-${blogId}`);
-    };
   }, [blogId, userId]);
 
   const handleLike = async () => {
+    if (isProcessing) return; // Prevent duplicate clicks
+    setIsProcessing(true);
+
     try {
-        if (liked) {
-            console.log(userId, blogId);
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/likes/remove`,{ blogId, userId });
-            setLikes(response.data.likesCount);
-            socket.emit("like", { blogId, userId, action: "remove" });
-            setLiked(false);
-        } else {
-            console.log(userId, blogId);
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/likes/add`,{ blogId, userId });
-            setLikes(response.data.likesCount);
-            socket.emit("like", { blogId, userId, action: "add" });
-            setLiked(true);
-        }
+      const endpoint = liked ? "remove" : "add";
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/likes/${endpoint}`,
+        { blogId, userId }
+      );
+      setLikes(response.data.likesCount);
+      setLiked(!liked);
     } catch (error) {
-        console.error("Failed to update like:", error);
+      console.error("Failed to update like:", error);
+    } finally {
+      setIsProcessing(false); // Reset the flag
     }
-};
+  };
 
   return (
-    <button
-      onClick={handleLike}
-      className={`px-4 py-2 rounded-lg ${
-        liked ? "bg-blue-500 text-white" : "bg-gray-300 text-black"
-      }`}
-    >
-      {liked ? "Unlike" : "Like"} ({likes})
-    </button>
+    <div>
+      <div className="flex items-center cursor-pointer" onClick={handleLike}>
+        {liked ? (
+          <FaHeart className="text-red-500 text-xl" />
+        ) : (
+          <FaRegHeart className="text-primary text-xl" />
+        )}
+        <span className="ml-2 text-primary">{likes}</span>
+      </div>
+    </div>
   );
 }
 

@@ -7,6 +7,7 @@ import RegisterPage from "./components/pages/register";
 import Header from "./components/common/header/header";
 import { Navigate } from "react-router-dom";
 import BlogsPage from './components/pages/blogsPage';
+import BlogDetailsPage from "./components/pages/blogDetailsPage";
 
 function App() {
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
@@ -39,6 +40,7 @@ function App() {
             <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
             <Route path="/userBlogs" element={<BlogsPage token={token} userId={userId} />} />
+            <Route path="/blog/:blogId" element={<BlogDetailsPage token={token} userId={userId} />} />
             <Route path="/*" element={<UserDashboard token={token} userId={userId} />} />
           </Routes>
         </div>
