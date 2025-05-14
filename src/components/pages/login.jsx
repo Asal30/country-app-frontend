@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function LoginPage({ setToken, setRole, setUserId }) {
+export default function LoginPage({ setToken, setRole, setUserId, setApiKey }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +29,7 @@ export default function LoginPage({ setToken, setRole, setUserId }) {
           setToken(response.data.token);
           setRole(response.data.user_type || "user");
           setUserId(response.data.userId);
+          setApiKey(response.data.apiKey);
           navigate(response.data.user_type === "admin" ? "/admin" : "/dashboard");
         });
     } catch (err) {

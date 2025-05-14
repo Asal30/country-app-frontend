@@ -138,7 +138,6 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleCreate = async (data) => {
-    debugger;
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/blogs`, data, {
         headers: { 

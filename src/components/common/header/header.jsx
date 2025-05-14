@@ -26,7 +26,6 @@ function Header({ token, logout, role }) {
             </>
           )}
           <LinkItem to="/userBlogs" label="My Blogs" />
-          <LinkItem to="/comments" label="Comments" />
         </div>
 
         <div className="flex space-x justify-end">

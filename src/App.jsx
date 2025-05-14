@@ -13,20 +13,24 @@ function App() {
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
   const [role, setRole] = useState(sessionStorage.getItem('role') || '');
   const [userId, setUserId] = useState(sessionStorage.getItem('userId') || '');
+  const [apiKey, setApiKey] = useState(sessionStorage.getItem('apiKey') || '');
 
   useEffect(() => {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('role', role);
     sessionStorage.setItem('userId', userId);
+    sessionStorage.setItem('apiKey', apiKey);
   }, [token, role, userId]);
 
   const logout = () => {
     setToken('');
     setRole('');
     setUserId('');
+    setApiKey('');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('role');
     sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('apiKey');
   };
 
   return (
@@ -36,11 +40,11 @@ function App() {
         {/* Add margin-top to push content below the fixed header */}
         <div className="pt-16">
           <Routes>
-            <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} setUserId={setUserId} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
+            <Route path="/login" element={!token ? <LoginPage setToken={setToken} setRole={setRole} setUserId={setUserId} setApiKey={setApiKey} /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/register" element={!token ? <RegisterPage /> : <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} />} />
             <Route path="/admin" element={token && role === 'admin' ? <AdminDashboard token={token} /> : <Navigate to="/login" />} />
             <Route path="/userBlogs" element={<BlogsPage token={token} userId={userId} />} />
-            <Route path="/blog/:blogId" element={<BlogDetailsPage token={token} userId={userId} />} />
+            <Route path="/blog/:blogId" element={<BlogDetailsPage token={token} userId={userId} apiKey={apiKey} />} />
             <Route path="/*" element={<UserDashboard token={token} userId={userId} />} />
           </Routes>
         </div>
