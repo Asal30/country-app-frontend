@@ -6,7 +6,6 @@ import { GoComment } from "react-icons/go";
 
 export default function HomePage({ token, userId }) {
   const [posts, setPosts] = useState([]);
-
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,8 +33,24 @@ export default function HomePage({ token, userId }) {
         setLoading(false);
       }
     };
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/comments/${blogId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setComments(response.data);
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+    };
 
     fetchAllBlogsWithUser();
+    fetchComments();
   }, []);
 
   return (
@@ -45,7 +60,7 @@ export default function HomePage({ token, userId }) {
         <SortAndSearch posts={posts} setFilteredPosts={setFilteredPosts} />
 
         {/* Welcome Message */}
-        <div className="flex-col text-center my-[11%]">
+        <div className="flex-col text-center my-[9%]">
           <h1 className="text-4xl font-bold text-primary-900 ">
             Welcome to the Country Blog
           </h1>
@@ -82,7 +97,7 @@ export default function HomePage({ token, userId }) {
                   <img
                     src={post.user_profile_image}
                     alt={post.user_name}
-                    className="w-10 h-10 rounded-full mr-2"
+                    className="w-10 h-10 border-[1px] border-primary-400 rounded-full mr-2 object-cover"
                   />
                   <div>
                     <h3 className="text-primary-800 font-semibold hover:underline">
@@ -113,24 +128,21 @@ export default function HomePage({ token, userId }) {
                     {post.description}
                   </p>
                   <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
-                    {token && (
-                      <LikeButton
-                        blogId={post.id}
-                        userId={userId}
-                        initialLikes={post.likes}
-                      />
-                    )}
-                    <div className="flex items-center gap-4">
-                      <GoComment className="text-primary-600 text-xl font-bold" />
+                    {/* Like Button */}
+                    <LikeButton
+                      blogId={post.id}
+                      userId={userId}
+                      initialLikes={post.likes}
+                    />
+                    <div
+                      className="flex items-center gap-4 cursor-pointer"
+                      onClick={() =>
+                        (window.location.href = `/blog/${post.id}`)
+                      }
+                    >
+                      <GoComment className="text-primary-600 text-xl font-bold hover:text-primary-800" />
                       {post.comments}
                     </div>
-                    <span>
-                      {new Date(post.date).toLocaleString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </span>
                   </div>
                 </div>
               </div>

@@ -15,43 +15,42 @@ function BlogDetailsPage({ token, userId, apiKey }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchBlogDetails = async () => {
-      console.log(blogId);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${blogId}/with-user`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setBlog(response.data);
-      } catch (err) {
-        setError("Failed to fetch blog details.");
-        console.error("Error fetching blog details:", err);
-      }
-    };
-
     fetchBlogDetails();
     fetchComments();
   }, [blogId]);
 
+  const fetchBlogDetails = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${blogId}/with-user`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBlog(response.data);
+    } catch (err) {
+      setError("Failed to fetch blog details.");
+      console.error("Error fetching blog details:", err);
+    }
+  };
+
   const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/comments/${blogId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setComments(response.data);
-      } catch (err) {
-        console.error("Error fetching comments:", err);
-      }
-    };
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/${blogId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setComments(response.data);
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+    }
+  };
 
   const fetchCountryDetails = async () => {
     try {
@@ -84,6 +83,7 @@ function BlogDetailsPage({ token, userId, apiKey }) {
       setComments((prev) => [response.data, ...prev]);
       setNewComment(null);
       fetchComments();
+      fetchBlogDetails();
     } catch (err) {
       console.error("Error posting comment:", err);
     }
@@ -233,7 +233,7 @@ function BlogDetailsPage({ token, userId, apiKey }) {
                 <img
                   src={comment.user_profile_image}
                   alt={comment.user_name}
-                  className="w-8 h-8 border-[1px] border-primary-400 rounded-full mr-4"
+                  className="w-8 h-8 border-[1px] border-primary-400 object-cover rounded-full mr-4"
                 />
                 <div>
                   <h3 className="text-primary-700 text-md">

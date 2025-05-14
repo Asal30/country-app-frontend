@@ -77,9 +77,13 @@ function BlogsPage({ token, userId }) {
 
   const handleUpdate = async (id, data) => {
     try {
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post.id === id ? data : post))
@@ -121,9 +125,12 @@ function BlogsPage({ token, userId }) {
   const fetchBlogById = async (id) => {
     console.log("Fetching blog with ID:", id);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         setFormData(response.data);
         setIsEditing(true);
@@ -139,12 +146,16 @@ function BlogsPage({ token, userId }) {
 
   const handleCreate = async (data) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/blogs`, data, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setPosts((prevPosts) => [...prevPosts, response.data]);
       setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
       setError("");
@@ -177,7 +188,14 @@ function BlogsPage({ token, userId }) {
         await handleCreate(formData);
       }
 
-      setFormData({ id: null, title: "", description: "", country: "", date: "", photos: [] });
+      setFormData({
+        id: null,
+        title: "",
+        description: "",
+        country: "",
+        date: "",
+        photos: [],
+      });
       setPhotoPreviews([]);
       setIsEditing(false);
       setIsModalOpen(false);
@@ -237,24 +255,39 @@ function BlogsPage({ token, userId }) {
               />
               <div>
                 <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold text-primary-800">{post.title}</h2>
+                  <h2
+                    className="text-xl font-bold text-primary-800 hover:underline cursor-pointer"
+                    onClick={() => (window.location.href = `/blog/${post.id}`)}
+                  >
+                    {post.title}
+                  </h2>
                   <p className="text-primary-600 text-sm">{post.country}</p>
                 </div>
-                <p className="text-primary-600 text-sm mt-2 h-10">{post.description}</p>
+                <p className="text-primary-600 text-sm mt-2 h-10">
+                  {post.description}
+                </p>
                 <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
-                  <span>{new Date(post.date).toLocaleString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}</span>
+                  <span>
+                    {new Date(post.date).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
 
-                <div className="flex justify-between items-center mt-4">
-
+                <div className="flex justify-between items-center mt-4 text-primary-700 text-sm">
                   {/* Like Button */}
-                    <LikeButton blogId={post.id} userId={userId} initialLikes={post.likes} />
-                  <div className="flex items-center gap-4">
-                    <GoComment className="text-primary-600 text-xl font-bold" />
+                  <LikeButton
+                    blogId={post.id}
+                    userId={userId}
+                    initialLikes={post.likes}
+                  />
+                  <div
+                    className="flex items-center gap-4 cursor-pointer"
+                    onClick={() => (window.location.href = `/blog/${post.id}`)}
+                  >
+                    <GoComment className="text-primary-600 text-xl font-bold hover:text-primary-800" />
                     {post.comments}
                   </div>
                 </div>
