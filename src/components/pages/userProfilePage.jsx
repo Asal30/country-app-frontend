@@ -518,7 +518,7 @@ export default function UserProfilePage({
                     Change Password
                   </button>
                   {passwordMsg && (
-                    <p className="text-sm text-center text-red-500">
+                    <p className="text-sm text-center text-green-500">
                       {passwordMsg}
                     </p>
                   )}

@@ -9,6 +9,7 @@ import { Navigate } from "react-router-dom";
 import BlogsPage from './components/pages/blogsPage';
 import BlogDetailsPage from "./components/pages/blogDetailsPage";
 import UserProfilePage from "./components/pages/userProfilePage";
+import bgImage from './assets/background3.jpg';
 
 function App() {
   const [token, setToken] = useState(sessionStorage.getItem('token') || '');
@@ -32,7 +33,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className='bg-fixed bg-cover' style={{ backgroundImage: `url('/src/assets/background3.jpg')` }}>
+      <div className='bg-fixed bg-cover' style={{ backgroundImage: `url(${bgImage})` }}>
         <Header token={token} logout={logout} role={role} userId={userId} />
         {/* Add margin-top to push content below the fixed header */}
         <div className="pt-16">
