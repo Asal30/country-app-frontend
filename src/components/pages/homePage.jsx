@@ -3,7 +3,6 @@ import axios from "axios";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import LikeButton from "../common/likeButton/likeButton";
 import { GoComment } from "react-icons/go";
-import { use } from "react";
 
 export default function HomePage({ token, userId }) {
   const [posts, setPosts] = useState([]);
@@ -19,7 +18,7 @@ export default function HomePage({ token, userId }) {
     image: "",
     userId: "",
   });
-  const [photoPreview, setPhotoPreview] = useState(""); 
+  const [photoPreview, setPhotoPreview] = useState("");
 
   useEffect(() => {
     const fetchAllBlogsWithUser = async () => {
@@ -54,8 +53,9 @@ export default function HomePage({ token, userId }) {
     blogData.append("description", data.description);
     blogData.append("country", data.country);
     blogData.append("date", data.date);
-    blogData.append("image", data.image);
+    blogData.append("image", data.image); // should be a File object
     blogData.append("userId", userId);
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
@@ -63,12 +63,12 @@ export default function HomePage({ token, userId }) {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      setPosts((prevPosts) => [...prevPosts, response.data]);
-      setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
+      setPosts((prevPosts) => [...prevPosts, response.data.blog]);
+      setFilteredPosts((prevPosts) => [...prevPosts, response.data.blog]);
       setError("");
     } catch (err) {
       setError("Failed to create the blog. Please try again.");
@@ -217,9 +217,7 @@ export default function HomePage({ token, userId }) {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="backdrop-blur bg-white bg-opacity-10 p-6 rounded-lg shadow-lg w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">
-                Add New Blog Post
-              </h2>
+              <h2 className="text-xl font-bold mb-4">Add New Blog Post</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="block text-primary-800 font-medium mb-2">
