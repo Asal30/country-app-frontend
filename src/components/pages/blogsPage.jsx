@@ -13,15 +13,15 @@ function BlogsPage({ token, userId }) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    id: null,
     title: "",
     description: "",
     country: "",
     date: "",
-    images: "",
+    image: "",
+    userId: userId,
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [photoPreview, setPhotoPreview] = useState("");
 
   useEffect(() => {
     if (!token) {
@@ -77,6 +77,7 @@ function BlogsPage({ token, userId }) {
 
   const handleUpdate = async (id, data) => {
     try {
+      console.log("Updating blog with ID:", id, "and data:", data);
       await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`,
         data,
@@ -145,21 +146,27 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleCreate = async (data) => {
+    const blogData = new FormData();
+    blogData.append("title", data.title);
+    blogData.append("description", data.description);
+    blogData.append("country", data.country);
+    blogData.append("date", data.date);
+    blogData.append("image", data.image);
+    blogData.append("userId", userId);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
-        data,
+        blogData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
       setPosts((prevPosts) => [...prevPosts, response.data]);
       setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
       setError("");
-      setHasFetched(false);
     } catch (err) {
       setError("Failed to create the blog. Please try again.");
       console.error("Error creating blog:", err);
@@ -167,15 +174,13 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handlePhotoChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFormData({ ...formData, photos: files });
-
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setPhotoPreviews(previews);
+    const { name, value, files } = e.target;
+    if (name === "image" && files && files[0]) {
+      setFormData({ ...formData, image: files[0] });
+      setPhotoPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -189,14 +194,14 @@ function BlogsPage({ token, userId }) {
       }
 
       setFormData({
-        id: null,
         title: "",
         description: "",
         country: "",
         date: "",
-        photos: [],
+        image: "",
+        userId: "",
       });
-      setPhotoPreviews([]);
+      setPhotoPreview("");
       setIsEditing(false);
       setIsModalOpen(false);
     } catch (err) {
@@ -374,25 +379,24 @@ function BlogsPage({ token, userId }) {
               </div>
               <div className="mb-4">
                 <label className="block text-primary-800 font-medium mb-2">
-                  Images
+                  Image
                 </label>
                 <input
                   type="file"
                   accept="image/*"
-                  name="images"
+                  name="image"
                   multiple
-                  onChange={handlePhotoChange}
+                  onChange={handleChange}
                   className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  {photoPreviews.map((preview, index) => (
+                  {photoPreview && (
                     <img
-                      key={index}
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
+                      src={photoPreview}
+                      alt="Preview"
                       className="w-full h-32 object-cover rounded-lg"
                     />
-                  ))}
+                  )}
                 </div>
               </div>
               <div className="flex justify-end">

@@ -3,12 +3,23 @@ import axios from "axios";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import LikeButton from "../common/likeButton/likeButton";
 import { GoComment } from "react-icons/go";
+import { use } from "react";
 
 export default function HomePage({ token, userId }) {
   const [posts, setPosts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    country: "",
+    date: "",
+    image: "",
+    userId: "",
+  });
+  const [photoPreview, setPhotoPreview] = useState(""); 
 
   useEffect(() => {
     const fetchAllBlogsWithUser = async () => {
@@ -21,6 +32,7 @@ export default function HomePage({ token, userId }) {
           setPosts(response.data);
           setFilteredPosts(response.data);
           setError("");
+          console.log("Fetched blogs:", response.data);
         } else {
           setPosts([]);
           setFilteredPosts([]);
@@ -33,25 +45,68 @@ export default function HomePage({ token, userId }) {
         setLoading(false);
       }
     };
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/comments/${blogId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setComments(response.data);
-      } catch (err) {
-        console.error("Error fetching comments:", err);
-      }
-    };
 
     fetchAllBlogsWithUser();
-    fetchComments();
   }, []);
+  const handleCreate = async (data) => {
+    const blogData = new FormData();
+    blogData.append("title", data.title);
+    blogData.append("description", data.description);
+    blogData.append("country", data.country);
+    blogData.append("date", data.date);
+    blogData.append("image", data.image);
+    blogData.append("userId", userId);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs`,
+        blogData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setPosts((prevPosts) => [...prevPosts, response.data]);
+      setFilteredPosts((prevPosts) => [...prevPosts, response.data]);
+      setError("");
+    } catch (err) {
+      setError("Failed to create the blog. Please try again.");
+      console.error("Error creating blog:", err);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image" && files && files[0]) {
+      setFormData({ ...formData, image: files[0] });
+      setPhotoPreview(URL.createObjectURL(files[0]));
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("Creating new blog with data:", formData);
+      await handleCreate(formData);
+
+      setFormData({
+        title: "",
+        description: "",
+        country: "",
+        date: "",
+        image: "",
+        userId: "",
+      });
+      setPhotoPreview("");
+      setIsModalOpen(false);
+    } catch (err) {
+      setError("Failed to save the post. Please try again.");
+      console.error("Error saving post:", err);
+    }
+  };
 
   return (
     <>
@@ -60,7 +115,15 @@ export default function HomePage({ token, userId }) {
         <SortAndSearch posts={posts} setFilteredPosts={setFilteredPosts} />
 
         {/* Welcome Message */}
-        <div className="flex-col text-center my-[9%]">
+        <div className="flex-col text-center mb-[10%]">
+          <div className="flex justify-center items-center mb-[4%]">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-primary-600 text-primary-100 px-4 py-2 rounded-lg hover:bg-primary-700 transition"
+            >
+              Add New Blog
+            </button>
+          </div>
           <h1 className="text-4xl font-bold text-primary-900 ">
             Welcome to the Country Blog
           </h1>
@@ -147,6 +210,108 @@ export default function HomePage({ token, userId }) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Blog Form Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="backdrop-blur bg-white bg-opacity-10 p-6 rounded-lg shadow-lg w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4">
+                Add New Blog Post
+              </h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-primary-800 font-medium mb-2">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-primary-800 font-medium mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    rows="4"
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-primary-800 font-medium mb-2">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-primary-800 font-medium mb-2">
+                    Date of Visit
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-primary-800 font-medium mb-2">
+                    Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    name="image"
+                    multiple
+                    onChange={handleChange}
+                    className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    {photoPreview && (
+                      <img
+                        src={photoPreview}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-1 rounded-lg mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-primary-600 hover:bg-primary-700 text-primary-100 px-4 py-1 rounded-lg"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
