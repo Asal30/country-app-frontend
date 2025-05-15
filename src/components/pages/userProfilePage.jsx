@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
-import { FaRegFileAlt, FaRegHeart, FaRegCommentDots, FaStar } from "react-icons/fa";
+import {
+  FaRegFileAlt,
+  FaRegHeart,
+  FaRegCommentDots,
+  FaStar,
+} from "react-icons/fa";
 import axios from "axios";
 import { GoComment } from "react-icons/go";
 
@@ -58,10 +63,10 @@ export default function UserProfilePage({
       }
     );
     setStats({
-        blogs: res.data.totalBlogs,
-        likes: res.data.totalLikes,
-        comments: res.data.totalComments,
-        mostLikedBlog: res.data.mostLikedBlog
+      blogs: res.data.totalBlogs,
+      likes: res.data.totalLikes,
+      comments: res.data.totalComments,
+      mostLikedBlog: res.data.mostLikedBlog,
     });
   };
   const fetchFollowers = async () => {
@@ -77,7 +82,6 @@ export default function UserProfilePage({
     setFollowings(res.data);
   };
 
-  // Handle edit
   const handleEditChange = (e) => {
     const { name, value, files } = e.target;
     setEditData((prev) => ({
@@ -87,13 +91,21 @@ export default function UserProfilePage({
   };
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    console.log("Edit data :", editData);
+    const formData = new FormData();
+    formData.append("username", editData.username);
+    formData.append("bio", editData.bio);
+    formData.append("city", editData.city);
+    formData.append("profile_image", editData.profile_image);
     const res = await axios.put(
       `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}`,
-      editData,
-      { headers: { Authorization: `Bearer ${token}` } }
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
-    console.log(res.data.message);
     setEditMode(false);
     fetchUser();
   };
@@ -134,9 +146,9 @@ export default function UserProfilePage({
     <div className="min-h-screen p-6 flex flex-col items-center mt-16">
       <div className="w-[70%] flex mx-auto backdrop-blur p-12 bg-black bg-opacity-20 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
         {/* Left Profile Box */}
-        <div className="w-[30%] border-[1px] border-primary-500 rounded-lg shadow-lg p-8 m-8 relative flex flex-col text-center items-center">
+        <div className="w-[30%] min-h-[400px] border-[1px] border-primary-500 rounded-lg shadow-lg p-8 m-8 relative flex flex-col text-center justify-between items-center">
           {/* Edit Icon */}
-          {loggedInUserId === userId && !editMode && (
+          {String(loggedInUserId) === String(userId) && !editMode && (
             <button
               className="absolute top-4 right-4 text-primary-600 hover:text-primary-800"
               onClick={() => setEditMode(true)}
@@ -147,9 +159,9 @@ export default function UserProfilePage({
           )}
           {/* Profile Image */}
           <img
-            src={user.profile_image}
+            src={`${import.meta.env.VITE_BACKEND_URL}${user.profile_image}`}
             alt={user.username}
-            className="w-32 h-32 rounded-full border-4 border-primary-300 object-cover mb-4"
+            className="w-32 h-32 rounded-full border-4 border-primary-300 object-cover mt-4"
           />
           {/* Profile Info */}
           {editMode ? (
@@ -220,7 +232,7 @@ export default function UserProfilePage({
                   day: "numeric",
                 })}
               </p>
-              {loggedInUserId === userId ? (
+              {String(loggedInUserId) === String(userId) ? (
                 <button
                   className="mt-6 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                   onClick={logout}
@@ -228,15 +240,12 @@ export default function UserProfilePage({
                   Logout
                 </button>
               ) : (
-                loggedInUserId && (
-                  <button
-                    className="mt-6 bg-primary-600 text-primary-100 px-4 py-2 rounded hover:bg-primary-700"
-                    onClick={() => navigate(`/user/${loggedInUserId}`)}
-                  >
-                    View My Profile
-                  </button>
-                )
-                
+                <button
+                  className="mt-6 bg-primary-600 text-primary-100 px-4 py-2 rounded hover:bg-primary-700"
+                  onClick={() => navigate(`/user/${loggedInUserId}`)}
+                >
+                  View My Profile
+                </button>
               )}
             </>
           )}
@@ -265,35 +274,54 @@ export default function UserProfilePage({
 
           {/* Tab Contents */}
           {activeTab === "summary" && (
-            <div className="flex flex-col md:flex-row gap-8 w-full">
+            <div className="flex flex-col md:flex-row gap-8 w-full justify-center min-h-[400px]">
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-                <div className="bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                <div className="bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl p-6 my-8 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
                   <FaRegFileAlt className="text-4xl text-primary-600 mb-2" />
-                  <span className="text-3xl font-bold text-primary-800">{stats.blogs}</span>
-                  <span className="text-primary-700 mt-2 font-medium">Total Blogs</span>
+                  <span className="text-3xl font-bold text-primary-800">
+                    {stats.blogs}
+                  </span>
+                  <span className="text-primary-700 mt-2 font-medium">
+                    Total Blogs
+                  </span>
                 </div>
-                <div className="bg-gradient-to-br from-pink-900 to-pink-850 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                <div className="bg-gradient-to-br from-pink-900 to-pink-850 rounded-xl p-6 my-8 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
                   <FaRegHeart className="text-4xl text-pink-400 mb-2" />
-                  <span className="text-3xl font-bold text-pink-100">{stats.likes}</span>
-                  <span className="text-pink-200 mt-2 font-medium">Total Likes</span>
+                  <span className="text-3xl font-bold text-pink-100">
+                    {stats.likes}
+                  </span>
+                  <span className="text-pink-200 mt-2 font-medium">
+                    Total Likes
+                  </span>
                 </div>
-                <div className="bg-gradient-to-br from-blue-900 to-blue-850 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                <div className="bg-gradient-to-br from-blue-900 to-blue-850 rounded-xl p-6 my-8 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
                   <FaRegCommentDots className="text-4xl text-blue-400 mb-2" />
-                  <span className="text-3xl font-bold text-blue-100">{stats.comments}</span>
-                  <span className="text-blue-200 mt-2 font-medium">Total Comments</span>
+                  <span className="text-3xl font-bold text-blue-100">
+                    {stats.comments}
+                  </span>
+                  <span className="text-blue-200 mt-2 font-medium">
+                    Total Comments
+                  </span>
                 </div>
               </div>
               {/* Most Liked Blog Card */}
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div className="backdrop-blur bg-opacity-30 bg-black rounded-xl shadow-lg p-6 w-full max-w-xs hover:shadow-xl transition-shadow border border-primary-200">
                   <div className="flex items-center justify-center mb-2">
-                    <span className="text-primary-700 font-semibold text-lg">Most Liked Blog</span>
+                    <span className="text-primary-700 font-semibold text-lg">
+                      Most Liked Blog
+                    </span>
                   </div>
                   {stats.mostLikedBlog ? (
-                    <div onClick={() => navigate(`/blog/${stats.mostLikedBlog.id}`)} className="cursor-pointer hover:scale-105 transition-transform">
+                    <div
+                      onClick={() =>
+                        navigate(`/blog/${stats.mostLikedBlog.id}`)
+                      }
+                      className="cursor-pointer hover:scale-105 transition-transform"
+                    >
                       <img
-                        src={stats.mostLikedBlog.image}
+                        src={`${import.meta.env.VITE_BACKEND_URL}${stats.mostLikedBlog.image}`}
                         alt={stats.mostLikedBlog.title}
                         className="w-full h-32 object-cover rounded mb-2 border border-primary-300"
                       />
@@ -305,12 +333,12 @@ export default function UserProfilePage({
                       </p>
                       <div className="flex items-center justify-between gap-2 text-primary-600 text-xs">
                         <div className="flex items-center gap-2 text-primary-600 text-xs">
-                            <FaRegHeart className="text-pink-500" />
-                            {stats.mostLikedBlog.likes}
+                          <FaRegHeart className="text-pink-500" />
+                          {stats.mostLikedBlog.likes}
                         </div>
                         <div className="flex items-center gap-2 text-primary-600 ">
-                            <GoComment className="text-primary-600 text-sm" />
-                            {stats.mostLikedBlog.comments}
+                          <GoComment className="text-primary-600 text-sm" />
+                          {stats.mostLikedBlog.comments}
                         </div>
                       </div>
                     </div>
@@ -323,7 +351,7 @@ export default function UserProfilePage({
           )}
 
           {activeTab === "followers" && (
-            <div>
+            <div className="w-full justify-center min-h-[400px]">
               <h3 className="text-lg font-bold mb-4">Followers</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {followers.length === 0 && <p>No followers yet.</p>}
@@ -333,7 +361,9 @@ export default function UserProfilePage({
                     className="flex items-center bg-primary-50 p-3 rounded shadow"
                   >
                     <img
-                      src={f.profile_image}
+                      src={`${import.meta.env.VITE_BACKEND_URL}${
+                        f.profile_image
+                      }`}
                       alt={f.name}
                       className="w-10 h-10 rounded-full mr-3 object-cover"
                     />
@@ -347,7 +377,7 @@ export default function UserProfilePage({
           )}
 
           {activeTab === "followings" && (
-            <div>
+            <div className="w-full justify-center min-h-[400px]">
               <h3 className="text-lg font-bold mb-4">Followings</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {followings.length === 0 && <p>Not following anyone yet.</p>}
@@ -357,7 +387,9 @@ export default function UserProfilePage({
                     className="flex items-center bg-primary-50 p-3 rounded shadow"
                   >
                     <img
-                      src={f.profile_image}
+                      src={`${import.meta.env.VITE_BACKEND_URL}${
+                        f.profile_image
+                      }`}
                       alt={f.name}
                       className="w-10 h-10 rounded-full mr-3 object-cover"
                     />
@@ -370,53 +402,57 @@ export default function UserProfilePage({
             </div>
           )}
 
-            {/* Change Password */}
+          {/* Change Password */}
           {activeTab === "change-password" && (
-            <div className="max-w-md mx-auto">
-              <h3 className="text-lg font-bold mb-4 text-center">Change Password</h3>
-              <form
-                onSubmit={handlePasswordSubmit}
-                className="flex flex-col items-center gap-4"
-              >
-                <input
-                  type="password"
-                  name="old"
-                  value={passwords.old}
-                  onChange={handlePasswordChange}
-                  className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
-                  placeholder="Current Password"
-                  required
-                />
-                <input
-                  type="password"
-                  name="new"
-                  value={passwords.new}
-                  onChange={handlePasswordChange}
-                  className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
-                  placeholder="New Password"
-                  required
-                />
-                <input
-                  type="password"
-                  name="confirm"
-                  value={passwords.confirm}
-                  onChange={handlePasswordChange}
-                  className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
-                  placeholder="Confirm New Password"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="bg-primary-600 text-primary-100 w-[40%] px-4 py-2 rounded hover:bg-primary-700"
-                >
+            <div className="flex flex-col items-center justify-center min-h-[400px] w-full">
+              <div className="max-w-md w-full">
+                <h3 className="text-lg font-bold mb-4 text-center">
                   Change Password
-                </button>
-                {passwordMsg && (
-                  <p className="text-sm text-center text-red-500">
-                    {passwordMsg}
-                  </p>
-                )}
-              </form>
+                </h3>
+                <form
+                  onSubmit={handlePasswordSubmit}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <input
+                    type="password"
+                    name="old"
+                    value={passwords.old}
+                    onChange={handlePasswordChange}
+                    className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
+                    placeholder="Current Password"
+                    required
+                  />
+                  <input
+                    type="password"
+                    name="new"
+                    value={passwords.new}
+                    onChange={handlePasswordChange}
+                    className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
+                    placeholder="New Password"
+                    required
+                  />
+                  <input
+                    type="password"
+                    name="confirm"
+                    value={passwords.confirm}
+                    onChange={handlePasswordChange}
+                    className="p-2 placeholder:text-gray-400 text-primary-900 bg-black bg-opacity-20 border-[1px] border-primary-400 rounded w-full"
+                    placeholder="Confirm New Password"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="bg-primary-600 text-primary-100 w-[40%] px-4 py-2 rounded hover:bg-primary-700"
+                  >
+                    Change Password
+                  </button>
+                  {passwordMsg && (
+                    <p className="text-sm text-center text-red-500">
+                      {passwordMsg}
+                    </p>
+                  )}
+                </form>
+              </div>
             </div>
           )}
         </div>

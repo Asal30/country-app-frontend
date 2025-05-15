@@ -138,7 +138,7 @@ function BlogDetailsPage({ token, userId }) {
             {/* User Box */}
             <div className="flex items-center">
               <img
-                src={blog.user_profile_image}
+                src={`${import.meta.env.VITE_BACKEND_URL}${blog.user_profile_image}`}
                 alt={blog.user_name}
                 className="w-12 h-12 border-[1px] border-primary-400 rounded-full mr-4 object-cover"
               />
@@ -196,7 +196,7 @@ function BlogDetailsPage({ token, userId }) {
 
         {/* Blog Image */}
         <img
-          src={blog.image}
+          src={`${import.meta.env.VITE_BACKEND_URL}${blog.image}`}
           alt={blog.title}
           className="w-full h-96 object-cover border-[1px] border-primary-400 rounded-lg mb-6"
         />
@@ -251,7 +251,7 @@ function BlogDetailsPage({ token, userId }) {
               {/* User Box */}
               <div className="flex items-center">
                 <img
-                  src={comment.user_profile_image}
+                  src={`${import.meta.env.VITE_BACKEND_URL}${comment.user_profile_image}`}
                   alt={comment.user_name}
                   className="w-8 h-8 border-[1px] border-primary-400 object-cover rounded-full mr-4"
                 />

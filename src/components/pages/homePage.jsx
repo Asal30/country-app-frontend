@@ -21,7 +21,10 @@ export default function HomePage({ token, userId }) {
   const [photoPreview, setPhotoPreview] = useState("");
 
   useEffect(() => {
-    const fetchAllBlogsWithUser = async () => {
+    fetchAllBlogsWithUser();
+  }, []);
+
+  const fetchAllBlogsWithUser = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
@@ -44,9 +47,6 @@ export default function HomePage({ token, userId }) {
         setLoading(false);
       }
     };
-
-    fetchAllBlogsWithUser();
-  }, []);
   const handleCreate = async (data) => {
     const blogData = new FormData();
     blogData.append("title", data.title);
@@ -70,6 +70,7 @@ export default function HomePage({ token, userId }) {
       setPosts((prevPosts) => [...prevPosts, response.data.blog]);
       setFilteredPosts((prevPosts) => [...prevPosts, response.data.blog]);
       setError("");
+      fetchAllBlogsWithUser();
     } catch (err) {
       setError("Failed to create the blog. Please try again.");
       console.error("Error creating blog:", err);
@@ -158,7 +159,7 @@ export default function HomePage({ token, userId }) {
                   }
                 >
                   <img
-                    src={post.user_profile_image}
+                    src={`${import.meta.env.VITE_BACKEND_URL}${post.user_profile_image}`}
                     alt={post.user_name}
                     className="w-10 h-10 border-[1px] border-primary-400 rounded-full mr-2 object-cover"
                   />
@@ -176,7 +177,7 @@ export default function HomePage({ token, userId }) {
                   </div>
                 </div>
                 <img
-                  src={post.image}
+                  src={`${import.meta.env.VITE_BACKEND_URL}${post.image}`}
                   alt={post.title}
                   className="w-full h-48 object-cover rounded-lg mb-2"
                 />

@@ -36,36 +36,36 @@ function BlogsPage({ token, userId }) {
       return;
     }
 
-    const fetchUserBlogs = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/blogs/user/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.data && response.data.length > 0) {
-          setPosts(response.data);
-          setFilteredPosts(response.data);
-          setError("");
-        } else {
-          setPosts([]);
-          setFilteredPosts([]);
-          setError("No blogs found.");
-        }
-      } catch (err) {
-        setError("Failed to fetch blogs. Please try again later.");
-        console.error("Error fetching blogs:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserBlogs();
   }, [token, userId, navigate]);
+
+  const fetchUserBlogs = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/blogs/user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.data && response.data.length > 0) {
+        setPosts(response.data);
+        setFilteredPosts(response.data);
+        setError("");
+      } else {
+        setPosts([]);
+        setFilteredPosts([]);
+        setError("No blogs found.");
+      }
+    } catch (err) {
+      setError("Failed to fetch blogs. Please try again later.");
+      console.error("Error fetching blogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEdit = (id) => {
     if (!id) {
@@ -76,13 +76,22 @@ function BlogsPage({ token, userId }) {
   };
 
   const handleUpdate = async (id, data) => {
+    const blogData = new FormData();
+    blogData.append("title", data.title);
+    blogData.append("description", data.description);
+    blogData.append("country", data.country);
+    blogData.append("date", data.date);
+    blogData.append("image", data.image);
+    blogData.append("userId", userId);
     try {
-      console.log("Updating blog with ID:", id, "and data:", data);
       await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/blogs/${id}`,
-        data,
+        blogData,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -204,6 +213,7 @@ function BlogsPage({ token, userId }) {
       setPhotoPreview("");
       setIsEditing(false);
       setIsModalOpen(false);
+      fetchUserBlogs();
     } catch (err) {
       setError("Failed to save the post. Please try again.");
       console.error("Error saving post:", err);
@@ -254,7 +264,7 @@ function BlogsPage({ token, userId }) {
               className="backdrop-blur bg-black bg-opacity-20 rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow duration-300"
             >
               <img
-                src={post.image}
+                src={`${import.meta.env.VITE_BACKEND_URL}${post.image}`}
                 alt={post.title}
                 className="w-full h-48 object-cover rounded-lg mb-2"
               />
