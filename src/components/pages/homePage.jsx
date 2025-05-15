@@ -55,7 +55,7 @@ export default function HomePage({ token, userId }) {
     blogData.append("description", data.description);
     blogData.append("country", data.country);
     blogData.append("date", data.date);
-    blogData.append("image", data.image); // should be a File object
+    blogData.append("image", data.image);
     blogData.append("userId", userId);
 
     try {

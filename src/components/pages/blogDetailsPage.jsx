@@ -5,7 +5,7 @@ import LikeButton from "../common/likeButton/likeButton";
 import { GoComment } from "react-icons/go";
 
 function BlogDetailsPage({ token, userId }) {
-  const { blogId } = useParams(); // Get the blog ID from the route
+  const { blogId } = useParams();
   const [blog, setBlog] = useState(null);
   const [country, setCountry] = useState([null]);
   const [comments, setComments] = useState([]);

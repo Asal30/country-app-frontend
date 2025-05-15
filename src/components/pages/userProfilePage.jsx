@@ -34,7 +34,6 @@ export default function UserProfilePage({
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
 
-  // Fetch user info and stats
   useEffect(() => {
     fetchUser();
     fetchStats();
@@ -136,7 +135,7 @@ export default function UserProfilePage({
         }));
       }
     } catch (err) {
-      // Optionally show error
+      console.error(err);
     }
     setFollowLoading(false);
     checkFollowStatus();
@@ -172,7 +171,6 @@ export default function UserProfilePage({
     fetchUser();
   };
 
-  // Handle password change
   const handlePasswordChange = (e) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };

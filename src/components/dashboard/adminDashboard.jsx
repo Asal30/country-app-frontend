@@ -101,7 +101,7 @@ export default function AdminDashboard({ token }) {
               <button
                 className="text-sm text-[#2C6975] hover:text-[#68B2A0] font-medium"
                 onClick={(e) => {
-                  e.stopPropagation(); // prevent triggering the parent card click
+                  e.stopPropagation();
                   navigate(card.path);
                 }}
               >

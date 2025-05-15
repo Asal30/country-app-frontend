@@ -5,7 +5,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 function LikeButton({ blogId, userId, initialLikes }) {
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false); // Prevent duplicate requests
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchUserLikeStatus = async () => {
@@ -40,7 +40,7 @@ function LikeButton({ blogId, userId, initialLikes }) {
   }, [blogId, userId]);
 
   const handleLike = async () => {
-    if (isProcessing) return; // Prevent duplicate clicks
+    if (isProcessing) return;
     setIsProcessing(true);
 
     try {
@@ -54,7 +54,7 @@ function LikeButton({ blogId, userId, initialLikes }) {
     } catch (error) {
       console.error("Failed to update like:", error);
     } finally {
-      setIsProcessing(false); // Reset the flag
+      setIsProcessing(false);
     }
   };
 
