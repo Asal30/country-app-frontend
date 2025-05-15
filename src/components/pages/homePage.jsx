@@ -3,6 +3,7 @@ import axios from "axios";
 import SortAndSearch from "../common/sortAndSearch/sortAndSearch";
 import LikeButton from "../common/likeButton/likeButton";
 import { GoComment } from "react-icons/go";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage({ token, userId }) {
   const [posts, setPosts] = useState([]);
@@ -19,6 +20,7 @@ export default function HomePage({ token, userId }) {
     userId: "",
   });
   const [photoPreview, setPhotoPreview] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAllBlogsWithUser();
@@ -119,7 +121,14 @@ export default function HomePage({ token, userId }) {
         <div className="flex-col text-center mb-[10%]">
           <div className="flex justify-center items-center mb-[4%]">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                if (token) 
+                  {
+                    setIsModalOpen(true)
+                  } else {
+                    navigate("/login")
+                  };
+              }}
               className="bg-primary-600 text-primary-100 px-4 py-2 rounded-lg hover:bg-primary-700 transition"
             >
               Add New Blog

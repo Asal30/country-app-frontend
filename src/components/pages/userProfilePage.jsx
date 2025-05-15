@@ -31,6 +31,8 @@ export default function UserProfilePage({
   const [followings, setFollowings] = useState([]);
   const [passwords, setPasswords] = useState({ old: "", new: "", confirm: "" });
   const [passwordMsg, setPasswordMsg] = useState("");
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   // Fetch user info and stats
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function UserProfilePage({
     fetchStats();
     fetchFollowers();
     fetchFollowings();
+    checkFollowStatus();
   }, [userId]);
 
   const fetchUser = async () => {
@@ -71,15 +74,74 @@ export default function UserProfilePage({
   };
   const fetchFollowers = async () => {
     const res = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/followers`
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/followers`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
+    console.log(res.data);
     setFollowers(res.data);
   };
   const fetchFollowings = async () => {
     const res = await axios.get(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/followings`
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/followings`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
+    console.log(res.data);
     setFollowings(res.data);
+  };
+
+  const checkFollowStatus = async () => {
+    if (String(loggedInUserId) === String(userId)) return;
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/is-following`,
+        {
+          params: { followerId: loggedInUserId },
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setIsFollowing(res.data.isFollowing);
+    } catch (err) {
+      setIsFollowing(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    setFollowLoading(true);
+    try {
+      if (!isFollowing) {
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/follow`,
+          { followerId: loggedInUserId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setIsFollowing(true);
+        setStats((prev) => ({
+          ...prev,
+          followers: prev.followers + 1,
+        }));
+      } else {
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}/unfollow`,
+          { followerId: loggedInUserId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setIsFollowing(false);
+        setStats((prev) => ({
+          ...prev,
+          followers: prev.followers - 1,
+        }));
+      }
+    } catch (err) {
+      // Optionally show error
+    }
+    setFollowLoading(false);
+    checkFollowStatus();
+    fetchFollowers();
+    fetchFollowings();
   };
 
   const handleEditChange = (e) => {
@@ -241,10 +303,19 @@ export default function UserProfilePage({
                 </button>
               ) : (
                 <button
-                  className="mt-6 bg-primary-600 text-primary-100 px-4 py-2 rounded hover:bg-primary-700"
-                  onClick={() => navigate(`/user/${loggedInUserId}`)}
+                  className={`mt-6 px-4 py-2 rounded text-primary-100 ${
+                    isFollowing
+                      ? "bg-primary-700 hover:bg-primary-800"
+                      : "bg-primary-600 hover:bg-primary-700"
+                  }`}
+                  onClick={handleFollow}
+                  disabled={followLoading}
                 >
-                  View My Profile
+                  {followLoading
+                    ? "Processing..."
+                    : isFollowing
+                    ? "Following"
+                    : "Follow"}
                 </button>
               )}
             </>
@@ -358,17 +429,17 @@ export default function UserProfilePage({
                 {followers.map((f) => (
                   <div
                     key={f.id}
-                    className="flex items-center bg-primary-50 p-3 rounded shadow"
+                    className="bg-gradient-to-br from-primary-100 to-primary-50 flex items-center border border-primary-200 bg-primary-50 p-3 rounded-lg shadow"
                   >
                     <img
                       src={`${import.meta.env.VITE_BACKEND_URL}${
                         f.profile_image
                       }`}
-                      alt={f.name}
+                      alt={f.username}
                       className="w-10 h-10 rounded-full mr-3 object-cover"
                     />
                     <span className="text-primary-800 font-semibold">
-                      {f.name}
+                      {f.username}
                     </span>
                   </div>
                 ))}
@@ -384,17 +455,17 @@ export default function UserProfilePage({
                 {followings.map((f) => (
                   <div
                     key={f.id}
-                    className="flex items-center bg-primary-50 p-3 rounded shadow"
+                    className="bg-gradient-to-br from-primary-100 to-primary-50 flex items-center border border-primary-200 bg-primary-50 p-3 rounded-lg shadow"
                   >
                     <img
                       src={`${import.meta.env.VITE_BACKEND_URL}${
                         f.profile_image
                       }`}
-                      alt={f.name}
+                      alt={f.username}
                       className="w-10 h-10 rounded-full mr-3 object-cover"
                     />
                     <span className="text-primary-800 font-semibold">
-                      {f.name}
+                      {f.username}
                     </span>
                   </div>
                 ))}
