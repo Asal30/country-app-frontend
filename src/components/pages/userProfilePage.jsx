@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import { FaRegFileAlt, FaRegHeart, FaRegCommentDots, FaStar } from "react-icons/fa";
 import axios from "axios";
+import { GoComment } from "react-icons/go";
 
 export default function UserProfilePage({
   token,
@@ -267,35 +268,34 @@ export default function UserProfilePage({
             <div className="flex flex-col md:flex-row gap-8 w-full">
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-                <div className="bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl p-6 shadow flex flex-col items-center hover:scale-105 transition-transform">
+                <div className="bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
                   <FaRegFileAlt className="text-4xl text-primary-600 mb-2" />
                   <span className="text-3xl font-bold text-primary-800">{stats.blogs}</span>
                   <span className="text-primary-700 mt-2 font-medium">Total Blogs</span>
                 </div>
-                <div className="bg-gradient-to-br from-pink-100 to-pink-50 rounded-xl p-6 shadow flex flex-col items-center hover:scale-105 transition-transform">
-                  <FaRegHeart className="text-4xl text-pink-500 mb-2" />
-                  <span className="text-3xl font-bold text-pink-700">{stats.likes}</span>
-                  <span className="text-pink-700 mt-2 font-medium">Total Likes</span>
+                <div className="bg-gradient-to-br from-pink-900 to-pink-850 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                  <FaRegHeart className="text-4xl text-pink-400 mb-2" />
+                  <span className="text-3xl font-bold text-pink-100">{stats.likes}</span>
+                  <span className="text-pink-200 mt-2 font-medium">Total Likes</span>
                 </div>
-                <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl p-6 shadow flex flex-col items-center hover:scale-105 transition-transform">
-                  <FaRegCommentDots className="text-4xl text-blue-500 mb-2" />
-                  <span className="text-3xl font-bold text-blue-700">{stats.comments}</span>
-                  <span className="text-blue-700 mt-2 font-medium">Total Comments</span>
+                <div className="bg-gradient-to-br from-blue-900 to-blue-850 rounded-xl p-6 shadow flex flex-col items-center justify-center text-center hover:scale-105 transition-transform">
+                  <FaRegCommentDots className="text-4xl text-blue-400 mb-2" />
+                  <span className="text-3xl font-bold text-blue-100">{stats.comments}</span>
+                  <span className="text-blue-200 mt-2 font-medium">Total Comments</span>
                 </div>
               </div>
               {/* Most Liked Blog Card */}
               <div className="flex-1 flex flex-col items-center justify-center">
-                <div className="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 w-full max-w-xs hover:shadow-xl transition-shadow border border-primary-200">
-                  <div className="flex items-center mb-2">
-                    <FaStar className="text-yellow-400 text-2xl mr-2" />
+                <div className="backdrop-blur bg-opacity-30 bg-black rounded-xl shadow-lg p-6 w-full max-w-xs hover:shadow-xl transition-shadow border border-primary-200">
+                  <div className="flex items-center justify-center mb-2">
                     <span className="text-primary-700 font-semibold text-lg">Most Liked Blog</span>
                   </div>
                   {stats.mostLikedBlog ? (
-                    <div>
+                    <div onClick={() => navigate(`/blog/${stats.mostLikedBlog.id}`)} className="cursor-pointer hover:scale-105 transition-transform">
                       <img
                         src={stats.mostLikedBlog.image}
                         alt={stats.mostLikedBlog.title}
-                        className="w-full h-32 object-cover rounded mb-2 border"
+                        className="w-full h-32 object-cover rounded mb-2 border border-primary-300"
                       />
                       <h4 className="text-lg font-bold text-primary-800 mb-1">
                         {stats.mostLikedBlog.title}
@@ -303,9 +303,15 @@ export default function UserProfilePage({
                       <p className="text-primary-600 text-sm line-clamp-2 mb-2">
                         {stats.mostLikedBlog.description}
                       </p>
-                      <div className="flex items-center gap-2 text-primary-600 text-xs">
-                        <FaRegHeart className="text-pink-500" />
-                        {stats.mostLikedBlog.likes} Likes
+                      <div className="flex items-center justify-between gap-2 text-primary-600 text-xs">
+                        <div className="flex items-center gap-2 text-primary-600 text-xs">
+                            <FaRegHeart className="text-pink-500" />
+                            {stats.mostLikedBlog.likes}
+                        </div>
+                        <div className="flex items-center gap-2 text-primary-600 ">
+                            <GoComment className="text-primary-600 text-sm" />
+                            {stats.mostLikedBlog.comments}
+                        </div>
                       </div>
                     </div>
                   ) : (
