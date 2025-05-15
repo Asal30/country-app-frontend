@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import  LinkItem from "../../../routes";
 
-function Header({ token, logout, role }) {
+function Header({ token, logout, role, userId }) {
   const navigate = useNavigate();
   const changeRoot = () => {
     logout();
@@ -29,7 +29,7 @@ function Header({ token, logout, role }) {
         </div>
 
         <div className="flex space-x justify-end">
-          <LinkItem to="/profile" label="Profile" />
+          <LinkItem to={`/user/${userId}`} label="Profile" />
           {token ? (
             <button onClick={changeRoot} className="px-3 py-2 rounded hover:text-primary-600 transition duration-300 ease-in-out">
               Logout

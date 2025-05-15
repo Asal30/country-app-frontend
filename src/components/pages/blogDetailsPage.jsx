@@ -1,20 +1,32 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import LikeButton from "../common/likeButton/likeButton";
 import { GoComment } from "react-icons/go";
-import { use } from "react";
 
-function BlogDetailsPage({ token, userId, apiKey }) {
+function BlogDetailsPage({ token, userId }) {
   const { blogId } = useParams(); // Get the blog ID from the route
   const [blog, setBlog] = useState(null);
-  const [country, setCountry] = useState([""]);
+  const [country, setCountry] = useState([null]);
   const [comments, setComments] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!token) {
+      const userResponse = window.confirm(
+        "User not logged in. Please log in to use this feature."
+      );
+      console.log(userResponse);
+      if (userResponse) {
+        navigate("/login");
+      } else {
+        navigate("/");
+      }
+      return;
+    }
     fetchBlogDetails();
     fetchComments();
   }, [blogId]);
@@ -53,17 +65,18 @@ function BlogDetailsPage({ token, userId, apiKey }) {
   };
 
   const fetchCountryDetails = async () => {
+    console.log(blog.country);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/countries/${blog.country}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "x-api-key": apiKey,
           },
         }
       );
       setCountry(response.data);
+      setClicked(true);
     } catch (err) {
       console.error("Error fetching country details:", err);
     }
@@ -82,8 +95,8 @@ function BlogDetailsPage({ token, userId, apiKey }) {
       );
       setComments((prev) => [response.data, ...prev]);
       setNewComment(null);
-      fetchComments();
       fetchBlogDetails();
+      fetchComments();
     } catch (err) {
       console.error("Error posting comment:", err);
     }
@@ -99,9 +112,19 @@ function BlogDetailsPage({ token, userId, apiKey }) {
 
   return (
     <div className="min-h-screen p-6">
+      {/* Error Message */}
       {error && (
-        <div className="text-center text-red-600 mb-4">
-          <p>{error}</p>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
+            <h2 className="text-lg font-semibold text-red-600 mb-2">Error</h2>
+            <p className="text-gray-700 mb-4">{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              OK
+            </button>
+          </div>
         </div>
       )}
 
@@ -135,13 +158,10 @@ function BlogDetailsPage({ token, userId, apiKey }) {
           </div>
 
           {/* Country Box */}
-          <div className="px-4 py-2 border rounded-lg shadow-md bg-white bg-opacity-10 border-primary-300">
+          <div className="px-4 py-2 border rounded-lg shadow-md bg-white bg-opacity-10 border-primary-300 overflow- max-w-[330px] max-h-30">
             {!clicked && (
               <button
-                onClick={() => {
-                  fetchCountryDetails();
-                  setClicked(true);
-                }}
+                onClick={() => fetchCountryDetails()}
                 className="h-20 text-primary-700 font-semibold"
               >
                 Click to view country details
@@ -156,17 +176,17 @@ function BlogDetailsPage({ token, userId, apiKey }) {
                 />
 
                 <div className="flex flex-col">
-                  <h3 className="text-lg font-bold text-primary-800">
+                  <h3 className="text-lg font-bold text-primary-600">
                     {country.name}
                   </h3>
-                  <p className="text-sm text-primary-700 font-medium">
-                    Capital: {country.capital}
-                  </p>
-                  <p className="text-sm text-primary-600">
-                    Currency: {country.currency}
-                  </p>
-                  <p className="text-sm text-primary-600">
-                    Languages: {country.languages}
+                    <p className="text-sm text-primary-500 font-medium">
+                      Capital : <span className="font-normal text-primary-600">{country.capital}</span>
+                    </p>
+                    <p className="text-sm text-primary-500 font-medium">
+                      Currency : <span className="font-normal text-primary-600">{country.currency}</span>
+                    </p>
+                  <p className="text-sm text-primary-500 font-medium">
+                    Languages : <span className="font-normal text-primary-600">{country.languages[0]} {country.languages[1]} {country.languages[2]}</span>
                   </p>
                 </div>
               </div>
