@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default function LoginPage({ setToken, setRole }) {
+export default function LoginPage({ setToken, setRole, setUserId }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +28,10 @@ export default function LoginPage({ setToken, setRole }) {
           console.log(response.data.message);
           setToken(response.data.token);
           setRole(response.data.user_type || "user");
-          navigate(response.data.user_type === "admin" ? "/admin" : "/dashboard");
+          setUserId(response.data.userId);
+          navigate(
+            response.data.user_type === "admin" ? "/admin" : "/dashboard"
+          );
         });
     } catch (err) {
       setError("Login failed. Please check your credentials.");
@@ -42,9 +45,19 @@ export default function LoginPage({ setToken, setRole }) {
           Welcome Back
         </h2>
 
+        {/* Error Message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-            {error}
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
+              <h2 className="text-lg font-semibold text-red-600 mb-2">Error</h2>
+              <p className="text-gray-700 mb-4">{error}</p>
+              <button
+                onClick={() => setError('')}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                OK
+              </button>
+            </div>
           </div>
         )}
 
@@ -68,7 +81,7 @@ export default function LoginPage({ setToken, setRole }) {
             </label>
             <input
               type="password"
-              className="w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="placeholder:text-primary-900-opacity-50 text-primary-900 bg-black bg-opacity-20 w-full p-3 border border-primary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -77,7 +90,7 @@ export default function LoginPage({ setToken, setRole }) {
 
           <button
             type="submit"
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition focus:ring-2 focus:ring-primary-500 focus:outline-none"
+            className="w-full bg-primary-600 hover:bg-primary-700 text-primary-100 py-3 rounded-lg font-medium transition focus:ring-2 focus:ring-primary-500 focus:outline-none"
           >
             Login
           </button>
